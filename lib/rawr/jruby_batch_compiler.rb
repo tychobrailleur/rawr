@@ -16,7 +16,7 @@ module Rawr
         
         next if files.empty? # Otherwise jrubyc breaks since we cannot compile nothing
 
-        file_set = files.map {|file| "#{directory}/#{file}"}
+        file_set = files.map {|file| "#{file}"}
         raise "Empty file set in #{__FILE__}." if file_set.empty?
         puts "    Go compile #{file_set.inspect}"
         begin
@@ -27,7 +27,12 @@ module Rawr
           # XXX: remove once JRuby 1.4 is no longer supported
           compiler = JRubyCompiler
         end
-        compiler.compile_files(file_set, directory, '', dest_dir)
+
+        current_dir = Dir.pwd
+        dest_dir = "#{current_dir}/#{dest_dir}"
+        Dir.chdir(directory)
+        compiler.compile_files(file_set, '', '', dest_dir)
+        Dir.chdir(current_dir)
       end
     end
 
